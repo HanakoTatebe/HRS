@@ -62,9 +62,9 @@ public class Main {
                     else System.out.println("該当なし\n");
                     break;
                 case 6:
-                    System.out.print("予約番号: ");
-                    int out = Integer.parseInt(scanner.nextLine());
-                    int fee = resCtrl.checkOut(out);
+                    System.out.print("部屋番号: ");
+                    int roomNo = Integer.parseInt(scanner.nextLine());
+                    int fee = resCtrl.checkOut(roomNo);
                     if (fee >= 0) System.out.println("宿泊料=" + fee + "円\n");
                     else System.out.println("該当なし\n");
                     break;
