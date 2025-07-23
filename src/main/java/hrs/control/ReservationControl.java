@@ -6,9 +6,9 @@ package hrs.control;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
-import java.util.Map;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 import hrs.entity.Reservation;
 import hrs.entity.RoomType;
@@ -17,8 +17,8 @@ public class ReservationControl {
     private final List<RoomType> types;
     private final List<Reservation> reservations = new ArrayList<>();
     private int nextResNo = 1;
-    private int nextRoomNo = 1;
     private final Map<Integer,Integer> nextRoomSeq = new HashMap<>();
+
     public ReservationControl(List<RoomType> roomTypes) {
         this.types = roomTypes;
     }
@@ -42,31 +42,32 @@ public class ReservationControl {
     // 予約登録
     public Reservation reserveRooms(LocalDate ci, LocalDate co,
                                     int typeId, int count) {
-        RoomType target = findRooms(ci, co).stream()
-            .filter(t -> t.getId() == typeId)
-            .findFirst()
-            .orElse(null);
-        if (target == null) return null;
+        RoomType target = findRooms(ci,co).stream()
+            .filter(t->t.getId()==typeId)
+            .findFirst().orElse(null);
+        if (target==null) return null;
         Reservation r = new Reservation(nextResNo++, typeId, count, ci, co);
         reservations.add(r);
         return r;
     }
 
     // チェックイン
-    public int checkIn(int reservationNumber) {
+    public List<Integer> checkIn(int reservationNumber) {
         for (Reservation r : reservations) {
-            if (r.getReservationNumber() == reservationNumber) {
+            if (r.getReservationNumber()==reservationNumber) {
                 int typeId = r.getTypeId();
-                // 既存シーケンスを取り出し +1
-                int seq = nextRoomSeq.getOrDefault(typeId, 0) + 1;
-                nextRoomSeq.put(typeId, seq);
-                // 部屋番号 = 種別ID×100 + シーケンス
-                int roomNo = typeId * 100 + seq;
-                r.setRoomNumber(roomNo);
-                return roomNo;
+                List<Integer> rooms = new ArrayList<>();
+                for (int i=0; i<r.getRoomCount(); i++) {
+                    int seq = nextRoomSeq.getOrDefault(typeId, 0) + 1;
+                    nextRoomSeq.put(typeId, seq);
+                    int roomNo = typeId * 100 + seq;
+                    r.addRoomNumber(roomNo);
+                    rooms.add(roomNo);
+                }
+                return rooms;
             }
         }
-        return -1;
+        return List.of();
     }
 
     //チェックアウト
@@ -74,7 +75,7 @@ public class ReservationControl {
         for (var it = reservations.iterator(); it.hasNext(); ) {
             Reservation r = it.next();
             // ここを reservationNumber から roomNumber へ切り替え
-            if (r.getRoomNumber() == roomNo) {
+            if (r.getRoomNumbers().contains(roomNo)) {
                 // 単価取得
                 int price = types.stream()
                     .filter(t -> t.getId() == r.getTypeId())

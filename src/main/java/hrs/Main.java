@@ -4,6 +4,7 @@
 package hrs;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Scanner;
 import hrs.boundary.ManagementUI;
 import hrs.boundary.ReservationUI;
@@ -38,11 +39,13 @@ public class Main {
                     break;
                 case 2: {
                     LocalDate[] d = uiRes.inputDates();
+                    if (d == null) break;   // nullならメニューに戻る
                     uiRes.showRooms(resCtrl.findRooms(d[0], d[1]));
                     break;
                 }
                 case 3: {
                     LocalDate[] d = uiRes.inputDates();
+                    if (d == null) break;
                     int tid = uiRes.selectRoomType();
                     int cnt = uiRes.selectCount();
                     Reservation r = resCtrl.reserveRooms(d[0], d[1], tid, cnt);
@@ -57,8 +60,8 @@ public class Main {
                 case 5:
                     System.out.print("予約番号: ");
                     int in = Integer.parseInt(scanner.nextLine());
-                    int rn = resCtrl.checkIn(in);
-                    if (rn > 0) uiRes.showRoomNumber(rn);
+                    List<Integer> roomNos = resCtrl.checkIn(in);
+                    if (!roomNos.isEmpty()) uiRes.showRoomNumbers(roomNos);
                     else System.out.println("該当なし\n");
                     break;
                 case 6:

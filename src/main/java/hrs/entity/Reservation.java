@@ -4,6 +4,8 @@
 package hrs.entity;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Reservation {
     private final int reservationNumber;
@@ -11,7 +13,7 @@ public class Reservation {
     private final int roomCount;
     private final LocalDate checkinDate;
     private final LocalDate checkoutDate;
-    private int roomNumber = -1;
+    private final List<Integer> roomNumbers = new ArrayList<>();
 
     public Reservation(int reservationNumber,
                        int typeId,
@@ -30,8 +32,8 @@ public class Reservation {
     public int getRoomCount() { return roomCount; }
     public LocalDate getCheckinDate() { return checkinDate; }
     public LocalDate getCheckoutDate() { return checkoutDate; }
-    public int getRoomNumber() { return roomNumber; }
-    public void setRoomNumber(int rn) { this.roomNumber = rn; }
+    public List<Integer> getRoomNumbers() { return roomNumbers; }
+    public void addRoomNumber(int roomNo) { roomNumbers.add(roomNo); }
 
     /** 指定期間と重複しているか判定 */
     public boolean overlaps(LocalDate ci, LocalDate co) {
